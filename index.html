@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -77,6 +77,9 @@
     -webkit-tap-highlight-color: transparent; }
   .match-left { flex: 0 0 auto; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
   .match-flags { display: flex; align-items: center; gap: 7px; }
+  .match-tbd { opacity: 0.55; }
+  .tbd-label { font-size: 0.85rem; font-style: italic; color: var(--text-muted, #666); }
+  .tbd-panel { padding: 12px 0; font-size: 0.85rem; color: var(--text-muted, #888); font-style: italic; text-align: center; }
   .flag { font-size: 2rem; line-height: 1; }
   .vs { color: var(--text); font-weight: 800; font-size: 0.9rem; }
   .match-round { font-size: 0.82rem; font-weight: 800; color: var(--text); margin-top: 2px; }
@@ -138,12 +141,11 @@
 </header>
 <div class="color-ribbon"></div>
 <div class="controls">
-  <button class="filter-btn active" onclick="filterRound('all')">Todos</button>
+  <button class="filter-btn active" onclick="filterRound('dia')">Por Dia</button>
   <button class="filter-btn" onclick="filterRound('1RODADA')">1a Rodada</button>
   <button class="filter-btn" onclick="filterRound('2RODADA')">2a Rodada</button>
   <button class="filter-btn" onclick="filterRound('3RODADA')">3a Rodada</button>
   <button class="filter-btn" onclick="filterRound('mata')">Mata-mata</button>
-  <button class="filter-btn" onclick="filterRound('dia')">Por Dia</button>
 </div>
 <div class="controls controls-row2">
   <select id="teamSelect" class="team-select" onchange="filterTeam(this.value)">
@@ -171,45 +173,109 @@ function favClass(name) {
 }
 const FE = '\u0046\u00ca AIRTON';
 const SCHEDULE = {
-  0:{date:'11/06',brt:'16:00'}, 1:{date:'12/06',brt:'14:00'}, 2:{date:'12/06',brt:'17:00'},
-  3:{date:'12/06',brt:'20:00'}, 4:{date:'13/06',brt:'13:00'}, 5:{date:'13/06',brt:'16:00'},
-  6:{date:'13/06',brt:'19:00'}, 7:{date:'13/06',brt:'20:00'}, 8:{date:'14/06',brt:'13:00'},
-  9:{date:'14/06',brt:'19:00'}, 10:{date:'14/06',brt:'16:00'}, 11:{date:'14/06',brt:'20:00'},
-  12:{date:'15/06',brt:'19:00'}, 13:{date:'15/06',brt:'13:00'}, 14:{date:'15/06',brt:'20:00'},
-  15:{date:'15/06',brt:'16:00'}, 16:{date:'16/06',brt:'13:00'}, 17:{date:'16/06',brt:'16:00'},
-  18:{date:'16/06',brt:'19:00'}, 19:{date:'16/06',brt:'20:00'}, 20:{date:'17/06',brt:'13:00'},
-  21:{date:'17/06',brt:'19:00'}, 22:{date:'17/06',brt:'20:00'}, 23:{date:'17/06',brt:'16:00'},
-  24:{date:'18/06',brt:'14:00'}, 25:{date:'18/06',brt:'19:00'}, 26:{date:'18/06',brt:'17:00'},
-  27:{date:'18/06',brt:'16:00'}, 28:{date:'19/06',brt:'20:00'}, 29:{date:'19/06',brt:'13:00'},
-  30:{date:'19/06',brt:'16:00'}, 31:{date:'19/06',brt:'19:00'}, 32:{date:'20/06',brt:'20:00'},
-  33:{date:'20/06',brt:'13:00'}, 34:{date:'20/06',brt:'16:00'}, 35:{date:'20/06',brt:'19:00'},
-  36:{date:'21/06',brt:'19:00'}, 37:{date:'21/06',brt:'13:00'}, 38:{date:'21/06',brt:'20:00'},
-  39:{date:'21/06',brt:'16:00'}, 40:{date:'22/06',brt:'19:00'}, 41:{date:'22/06',brt:'13:00'},
-  42:{date:'22/06',brt:'16:00'}, 43:{date:'22/06',brt:'20:00'}, 44:{date:'23/06',brt:'13:00'},
-  45:{date:'23/06',brt:'19:00'}, 46:{date:'23/06',brt:'20:00'}, 47:{date:'23/06',brt:'16:00'},
-  48:{date:'24/06',brt:'20:00'}, 49:{date:'24/06',brt:'20:00'}, 50:{date:'25/06',brt:'17:00'},
-  51:{date:'25/06',brt:'17:00'}, 52:{date:'24/06',brt:'17:00'}, 53:{date:'24/06',brt:'17:00'},
-  54:{date:'26/06',brt:'15:00'}, 55:{date:'26/06',brt:'15:00'}, 56:{date:'26/06',brt:'17:00'},
-  57:{date:'26/06',brt:'17:00'}, 58:{date:'25/06',brt:'20:00'}, 59:{date:'25/06',brt:'20:00'},
-  60:{date:'27/06',brt:'15:00'}, 61:{date:'27/06',brt:'15:00'}, 62:{date:'26/06',brt:'20:30'},
-  63:{date:'26/06',brt:'20:30'}, 64:{date:'26/06',brt:'19:00'}, 65:{date:'26/06',brt:'19:00'},
-  66:{date:'27/06',brt:'20:30'}, 67:{date:'27/06',brt:'20:30'}, 68:{date:'27/06',brt:'19:00'},
-  69:{date:'27/06',brt:'19:00'}, 70:{date:'27/06',brt:'17:00'}, 71:{date:'27/06',brt:'17:00'}
+  // Fase de Grupos (datas/horários corretos do documento oficial)
+  0:{date:'11/06',brt:'16:00'}, 1:{date:'11/06',brt:'23:00'}, 2:{date:'12/06',brt:'16:00'},
+  3:{date:'12/06',brt:'22:00'}, 4:{date:'13/06',brt:'16:00'}, 5:{date:'13/06',brt:'19:00'},
+  6:{date:'13/06',brt:'22:00'}, 7:{date:'13/06',brt:'01:00'}, 8:{date:'14/06',brt:'14:00'},
+  9:{date:'14/06',brt:'17:00'}, 10:{date:'14/06',brt:'20:00'}, 11:{date:'14/06',brt:'23:00'},
+  12:{date:'15/06',brt:'13:00'}, 13:{date:'15/06',brt:'16:00'}, 14:{date:'15/06',brt:'19:00'},
+  15:{date:'15/06',brt:'22:00'}, 16:{date:'16/06',brt:'16:00'}, 17:{date:'16/06',brt:'19:00'},
+  18:{date:'16/06',brt:'14:00'}, 19:{date:'17/06',brt:'01:00'}, 20:{date:'17/06',brt:'14:00'},
+  21:{date:'17/06',brt:'17:00'}, 22:{date:'17/06',brt:'20:00'}, 23:{date:'17/06',brt:'23:00'},
+  24:{date:'18/06',brt:'13:00'}, 25:{date:'18/06',brt:'16:00'}, 26:{date:'18/06',brt:'19:00'},
+  27:{date:'18/06',brt:'22:00'}, 28:{date:'19/06',brt:'16:00'}, 29:{date:'19/06',brt:'19:00'},
+  30:{date:'19/06',brt:'22:00'}, 31:{date:'19/06',brt:'01:00'}, 32:{date:'20/06',brt:'14:00'},
+  33:{date:'20/06',brt:'17:00'}, 34:{date:'20/06',brt:'21:00'}, 35:{date:'21/06',brt:'01:00'},
+  36:{date:'21/06',brt:'13:00'}, 37:{date:'21/06',brt:'16:00'}, 38:{date:'21/06',brt:'19:00'},
+  39:{date:'21/06',brt:'22:00'}, 40:{date:'22/06',brt:'14:00'}, 41:{date:'22/06',brt:'18:00'},
+  42:{date:'22/06',brt:'21:00'}, 43:{date:'23/06',brt:'00:00'}, 44:{date:'23/06',brt:'14:00'},
+  45:{date:'23/06',brt:'17:00'}, 46:{date:'23/06',brt:'20:00'}, 47:{date:'23/06',brt:'23:00'},
+  48:{date:'24/06',brt:'16:00'}, 49:{date:'24/06',brt:'16:00'}, 50:{date:'24/06',brt:'19:00'},
+  51:{date:'24/06',brt:'19:00'}, 52:{date:'24/06',brt:'22:00'}, 53:{date:'24/06',brt:'22:00'},
+  54:{date:'25/06',brt:'17:00'}, 55:{date:'25/06',brt:'17:00'}, 56:{date:'25/06',brt:'20:00'},
+  57:{date:'25/06',brt:'20:00'}, 58:{date:'25/06',brt:'23:00'}, 59:{date:'25/06',brt:'23:00'},
+  60:{date:'26/06',brt:'16:00'}, 61:{date:'26/06',brt:'16:00'}, 62:{date:'26/06',brt:'21:00'},
+  63:{date:'26/06',brt:'21:00'}, 64:{date:'27/06',brt:'00:00'}, 65:{date:'27/06',brt:'00:00'},
+  66:{date:'27/06',brt:'18:00'}, 67:{date:'27/06',brt:'18:00'}, 68:{date:'27/06',brt:'20:30'},
+  69:{date:'27/06',brt:'20:30'}, 70:{date:'27/06',brt:'23:00'}, 71:{date:'27/06',brt:'23:00'},
+  // 16avos de Final
+  72:{date:'28/06',brt:'16:00'}, 73:{date:'29/06',brt:'14:00'}, 74:{date:'29/06',brt:'17:30'},
+  75:{date:'29/06',brt:'22:00'}, 76:{date:'30/06',brt:'14:00'}, 77:{date:'30/06',brt:'18:00'},
+  78:{date:'30/06',brt:'22:00'}, 79:{date:'01/07',brt:'13:00'}, 80:{date:'01/07',brt:'17:00'},
+  81:{date:'01/07',brt:'21:00'}, 82:{date:'02/07',brt:'16:00'}, 83:{date:'02/07',brt:'20:00'},
+  84:{date:'03/07',brt:'02:00'}, 85:{date:'03/07',brt:'15:00'}, 86:{date:'03/07',brt:'19:00'},
+  87:{date:'04/07',brt:'02:30'},
+  // Oitavas de Final
+  88:{date:'04/07',brt:'14:00'}, 89:{date:'04/07',brt:'18:00'}, 90:{date:'05/07',brt:'17:00'},
+  91:{date:'05/07',brt:'21:00'}, 92:{date:'06/07',brt:'16:00'}, 93:{date:'06/07',brt:'21:00'},
+  94:{date:'07/07',brt:'13:00'}, 95:{date:'07/07',brt:'17:00'},
+  // Quartas de Final
+  96:{date:'09/07',brt:'17:00'}, 97:{date:'10/07',brt:'16:00'},
+  98:{date:'11/07',brt:'18:00'}, 99:{date:'11/07',brt:'22:00'},
+  // Semifinais
+  100:{date:'14/07',brt:'16:00'}, 101:{date:'15/07',brt:'16:00'},
+  // 3º Lugar e Final
+  102:{date:'18/07',brt:'18:00'}, 103:{date:'19/07',brt:'16:00'}
 };
 const WEEKDAYS = {
   '11/06':'Qui','12/06':'Sex','13/06':'S\u00e1b','14/06':'Dom',
   '15/06':'Seg','16/06':'Ter','17/06':'Qua','18/06':'Qui',
   '19/06':'Sex','20/06':'S\u00e1b','21/06':'Dom','22/06':'Seg',
-  '23/06':'Ter','24/06':'Qua','25/06':'Qui','26/06':'Sex','27/06':'S\u00e1b'
+  '23/06':'Ter','24/06':'Qua','25/06':'Qui','26/06':'Sex','27/06':'S\u00e1b',
+  '28/06':'Dom','29/06':'Seg','30/06':'Ter',
+  '01/07':'Ter','02/07':'Qua','03/07':'Qui','04/07':'Sex',
+  '05/07':'S\u00e1b','06/07':'Dom','07/07':'Seg',
+  '08/07':'Ter','09/07':'Qua','10/07':'Qui','11/07':'Sex',
+  '12/07':'S\u00e1b','13/07':'Dom','14/07':'Seg','15/07':'Ter',
+  '16/07':'Qua','17/07':'Qui','18/07':'Sex','19/07':'S\u00e1b'
 };
+const DAYS_IN_MONTH = { '06': 30, '07': 31 };
 function greeceTime(date, brt) {
   var p = brt.split(':'), h = parseInt(p[0], 10) + 6, m = p[1];
-  var dd = parseInt(date.split('/')[0], 10);
-  if (h >= 24) { h -= 24; dd += 1; }
-  return { time: (h < 10 ? '0' + h : h) + ':' + m, date: (dd < 10 ? '0' + dd : dd) + '/06' };
+  var parts = date.split('/'), dd = parseInt(parts[0], 10), mm = parts[1];
+  if (h >= 24) {
+    h -= 24;
+    dd += 1;
+    if (dd > DAYS_IN_MONTH[mm]) { dd = 1; mm = String(parseInt(mm, 10) + 1).padStart(2, '0'); }
+  }
+  return { time: (h < 10 ? '0' + h : h) + ':' + m, date: (dd < 10 ? '0' + dd : dd) + '/' + mm };
 }
 const ROUND_MAP = {'1RODADA':'1\u00aa Rodada','2RODADA':'2\u00aa Rodada','3RODADA':'3\u00aa Rodada'};
-let currentFilter = 'all';
+const knockoutGames = [
+  {id:72, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:73, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:74, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:75, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:76, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:77, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:78, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:79, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:80, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:81, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:82, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:83, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:84, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:85, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:86, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:87, round:'16avos de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:88, round:'Oitavas de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:89, round:'Oitavas de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:90, round:'Oitavas de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:91, round:'Oitavas de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:92, round:'Oitavas de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:93, round:'Oitavas de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:94, round:'Oitavas de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:95, round:'Oitavas de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:96, round:'Quartas de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:97, round:'Quartas de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:98, round:'Quartas de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:99, round:'Quartas de Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:100, round:'Semifinais', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:101, round:'Semifinais', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:102, round:'3\u00ba Lugar', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]},
+  {id:103, round:'Final', home:'', away:'', home_flag:'', away_flag:'', picks:{}, pick_ranking:[]}
+];
+let currentFilter = 'dia';
 let currentSearch = '';
 let currentTeam = '';
 
@@ -257,21 +323,38 @@ function renderGame(g) {
       '<span class="match-time"><span class="tz">GRE</span> ' + gre.time + ' <span class="tdate">(' + gre.date + ')</span></span>' +
       '</div>';
   }
+  var flagsHtml;
+  if (g.home_flag && g.away_flag) {
+    flagsHtml = '<div class="match-flags"><span class="flag">' + g.home_flag + '</span>' +
+      '<span class="vs">X</span><span class="flag">' + g.away_flag + '</span></div>';
+  } else {
+    flagsHtml = '<div class="match-flags match-tbd"><span class="tbd-label">A definir</span></div>';
+  }
+  var panelInner = g.pick_ranking.length > 0
+    ? '<h4>Ranking de palpites</h4>' + picksHtml
+    : '<div class="tbd-panel">Confronto e palpites ainda não definidos</div>';
   return '<div class="game-card" id="gc-' + g.id + '">' +
     '<button class="game-btn" onclick="toggleGame(' + g.id + ')">' +
       '<div class="match-left">' +
-        '<div class="match-flags"><span class="flag">' + g.home_flag + '</span>' +
-        '<span class="vs">X</span><span class="flag">' + g.away_flag + '</span></div>' +
+        flagsHtml +
         '<div class="match-round">' + g.round + '</div>' +
         timesHtml +
       '</div>' +
       '<div class="match-preds">' + predsHtml + '</div>' +
     '</button>' +
-    '<div class="picks-panel"><div class="picks-panel-inner"><h4>Ranking de palpites</h4>' + picksHtml + '</div></div></div>';
+    '<div class="picks-panel"><div class="picks-panel-inner">' + panelInner + '</div></div></div>';
 }
 function getFilteredGames() {
-  return games.filter(function(g) {
-    const roundOk = currentFilter === 'all' || currentFilter === 'dia' || g.round === ROUND_MAP[currentFilter];
+  var pool;
+  if (currentFilter === 'mata') {
+    pool = knockoutGames;
+  } else if (currentFilter === 'all' || currentFilter === 'dia') {
+    pool = games.concat(knockoutGames);
+  } else {
+    pool = games;
+  }
+  return pool.filter(function(g) {
+    const roundOk = currentFilter === 'all' || currentFilter === 'dia' || currentFilter === 'mata' || g.round === ROUND_MAP[currentFilter];
     const s = currentSearch.toLowerCase();
     const searchOk = !s || g.home.toLowerCase().indexOf(s) >= 0 || g.away.toLowerCase().indexOf(s) >= 0;
     const teamOk = !currentTeam || g.home === currentTeam || g.away === currentTeam;
@@ -280,12 +363,6 @@ function getFilteredGames() {
 }
 function render() {
   const main = document.getElementById('main');
-  if (currentFilter === 'mata') {
-    document.getElementById('visibleCount').textContent = 0;
-    main.innerHTML = '<div class="no-results">🏆 Fase de mata-mata<br><br>' +
-      'Os jogos, adversarios, palpites e horarios serao incluidos aqui assim que a fase de grupos terminar.</div>';
-    return;
-  }
   const filtered = getFilteredGames();
   document.getElementById('visibleCount').textContent = filtered.length;
   if (filtered.length === 0) { main.innerHTML = '<div class="no-results">Nenhum jogo encontrado</div>'; return; }
@@ -297,17 +374,25 @@ function render() {
       if (!byDay[key]) byDay[key] = [];
       byDay[key].push(g);
     });
-    Object.keys(byDay).sort().forEach(function(date) {
+    Object.keys(byDay).sort(function(a,b){var pa=a.split("/"),pb=b.split("/"),da=new Date(2026,parseInt(pa[1],10)-1,parseInt(pa[0],10)),db=new Date(2026,parseInt(pb[1],10)-1,parseInt(pb[0],10));return da-db;}).forEach(function(date) {
       const wd = WEEKDAYS[date] || '';
       const dayGames = byDay[date].slice().sort(function(a,b) {
         return (SCHEDULE[a.id]||{brt:'00:00'}).brt.localeCompare((SCHEDULE[b.id]||{brt:'00:00'}).brt);
       });
-      html += '<div class="round-header day-header">' + date + ' \u2014 ' + wd + '</div>' + dayGames.map(renderGame).join('');
+      html += '<div class="round-header day-header">' + date + ' — ' + wd + '</div>' + dayGames.map(renderGame).join('');
+    });
+  } else if (currentFilter === 'mata') {
+    const byRound = {};
+    filtered.forEach(function(g) { if (!byRound[g.round]) byRound[g.round] = []; byRound[g.round].push(g); });
+    const roundOrder = ['16avos de Final','Oitavas de Final','Quartas de Final','Semifinais','3º Lugar','Final'];
+    roundOrder.forEach(function(round) {
+      if (!byRound[round]) return;
+      html += '<div class="round-header">' + round + '</div>' + byRound[round].map(renderGame).join('');
     });
   } else {
     const byRound = {};
     filtered.forEach(function(g) { if (!byRound[g.round]) byRound[g.round] = []; byRound[g.round].push(g); });
-    const roundOrder = ['1\u00aa Rodada','2\u00aa Rodada','3\u00aa Rodada','Outros'];
+    const roundOrder = ['1ª Rodada','2ª Rodada','3ª Rodada','16avos de Final','Oitavas de Final','Quartas de Final','Semifinais','3º Lugar','Final'];
     roundOrder.forEach(function(round) {
       if (!byRound[round]) return;
       html += '<div class="round-header">' + round + '</div>' + byRound[round].map(renderGame).join('');
