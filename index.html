@@ -76,9 +76,9 @@
     margin-bottom: 9px; overflow: hidden; transition: all 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
   .game-card.active { border-color: var(--wc-green); box-shadow: 0 3px 14px rgba(0,135,90,0.12); }
   .game-btn { width: 100%; background: none; border: none; color: var(--text); padding: 12px 12px;
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; text-align: center;
+    cursor: pointer; display: flex; align-items: stretch; gap: 10px; text-align: left;
     -webkit-tap-highlight-color: transparent; }
-  .match-left { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 0; }
+  .match-left { flex: 0 0 auto; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
   .match-flags { display: flex; align-items: center; gap: 7px; }
   .match-tbd { opacity: 0.55; }
   .tbd-label { font-size: 0.85rem; font-style: italic; color: var(--text-muted, #666); }
@@ -163,9 +163,15 @@ const games = [{"id": 0, "home": "M\u00e9xico", "away": "\u00c1frica do Sul", "r
 const NICHOLAS = 'NICHOLAS';
 const NIKO = 'NIKO';
 function displayName(name) {
+  if (name === NICHOLAS) return 'NI';
+  if (name === FE) return 'FE';
+  if (name === NIKO) return 'NICO';
   return name;
 }
 function favClass(name) {
+  if (name === NICHOLAS) return 'is-nicholas';
+  if (name === FE) return 'is-fe';
+  if (name === NIKO) return 'is-niko';
   return '';
 }
 const FE = '\u0046\u00ca AIRTON';
@@ -297,7 +303,9 @@ function renderGame(g) {
       '<span class="pred-score">' + (pick || '—') + '</span>' +
       '<span class="pred-count">' + (pick ? count + ' palpites' : '—') + '</span></div>';
   }
-
+  var predsHtml = predCard('pred-ni', 'NI', g.picks[NICHOLAS] || null) +
+                  predCard('pred-fe', 'FE', g.picks[FE] || null) +
+                  predCard('pred-nico', 'NICO', g.picks[NIKO] || null);
   const picksHtml = g.pick_ranking.map(function(item, idx) {
     const rankClass = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : 'rank-other';
     const pct = Math.round((item.count / maxCount) * 100);
@@ -315,6 +323,7 @@ function renderGame(g) {
     var gre = greeceTime(sch.date, sch.brt);
     timesHtml = '<div class="match-times">' +
       '<span class="match-time"><span class="tz">BRA</span> ' + sch.brt + ' <span class="tdate">(' + sch.date + ')</span></span>' +
+      '<span class="match-time"><span class="tz">GRE</span> ' + gre.time + ' <span class="tdate">(' + gre.date + ')</span></span>' +
       '</div>';
   }
   var flagsHtml;
@@ -334,6 +343,7 @@ function renderGame(g) {
         '<div class="match-round">' + g.round + '</div>' +
         timesHtml +
       '</div>' +
+      '<div class="match-preds">' + predsHtml + '</div>' +
     '</button>' +
     '<div class="picks-panel"><div class="picks-panel-inner">' + panelInner + '</div></div></div>';
 }
